@@ -1,0 +1,87 @@
+import { useState } from "react"
+
+type ScalarFields = {
+  available: string
+  savingsTarget: string
+  savingsFloor: string
+  necessity: string
+  leisure: string
+}
+
+export default function BudgetSetup() {
+  const [fields, setFields] = useState<ScalarFields>({
+    available: "",
+    savingsTarget: "",
+    savingsFloor: "",
+    necessity: "",
+    leisure: "",
+  })
+
+  function update(key: keyof ScalarFields, value: string) {
+    setFields((prev) => ({ ...prev, [key]: value }))
+  }
+
+  return (
+    <form className="budget-setup">
+      <h1>Your budgety for this month</h1>
+
+      <div className="field">
+        <label htmlFor="available">Available amount</label>
+        <input type="text"
+               id="available"
+               inputMode="numeric"
+               value={fields.available}
+               onChange={(e) => update("available", e.target.value)}
+              />
+      </div>
+
+      <fieldset className="envelope">
+        <legend>Savings</legend>
+
+        <div className="field">
+          <label htmlFor="savings-target">Targeted amount</label>
+          <input type="text"
+                 id="savings-target"
+                 inputMode="numeric"
+                 value={fields.savingsTarget}
+                 onChange={(e) => update("savingsTarget", e.target.value)}
+                />
+        </div>
+
+        <div className="field">
+          <label htmlFor="savings-floor">Minimum expected</label>
+          <input type="text"
+                 id="savings-floor"
+                 inputMode="numeric"
+                 value={fields.savingsFloor}
+                 onChange={(e) => update("savingsFloor", e.target.value)}
+                />
+        </div>
+      </fieldset>
+
+      <div className="field">
+        <label htmlFor="necessity">Necessities</label>
+        <input type="text"
+               id="necessity"
+               inputMode="numeric"
+               value={fields.necessity}
+               onChange={(e) => update("necessity", e.target.value)}
+              />
+      </div>
+
+      <div className="field">
+        <label htmlFor="leisure">Leisure</label>
+        <input type="text"
+               id="leisure"
+               inputMode="numeric"
+               value={fields.leisure}
+               onChange={(e) => update("leisure", e.target.value)}/>
+
+      </div>
+
+      <p className="remaining">extra to dispatch : —</p>
+
+      <button type="submit">Create budget</button>
+    </form>
+  )
+}
