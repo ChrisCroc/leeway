@@ -27,7 +27,7 @@ export type Envelope =
   | NecessityEnvelope
   | LeisureEnvelope
 
-export type WithdrawalSource = "savings" | "necessity" | "leisure"
+export type WithdrawalSource = "savings" | "necessity" | "leisure" | "overdraft"
 
 export type Withdrawal = {
   source: WithdrawalSource
@@ -50,3 +50,13 @@ export type MonthBudget = {
   leisure: LeisureEnvelope
   expenses: Expense[]
 }
+
+export type BreachKind = "savingsFloor" | "necessityUsed" | "overdraft"
+
+export type Breach = {
+  kind: BreachKind
+  amount: number
+}
+export type Verdict =
+  | { kind: "clear"; withdrawals: Withdrawal[] }
+  | { kind: "breached"; withdrawals: Withdrawal[]; breaches: Breach[] }
