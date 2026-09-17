@@ -4,6 +4,11 @@ import type { FixedDraft } from "../components/FixedLine"
 
 let nextFixedId = 1
 
+function toAmount(value: string): number {
+  if (value.trim() === "") return 0
+  return Number(value.replace(",", "."))
+}
+
 type ScalarFields = {
   available: string
   savingsTarget: string
@@ -44,6 +49,18 @@ export default function BudgetSetup() {
       prev.map((line) => (line.id === id ? { ...line, [field]: value } : line))
     )
   }
+
+  const fixedTotal = fixedLines.reduce(
+    (total, line) => total + toAmount(line.amount),
+    0
+  )
+
+  const toDispatch =
+    toAmount(fields.available) -
+    fixedTotal -
+    toAmount(fields.savingsTarget) -
+    toAmount(fields.necessity) -
+    toAmount(fields.leisure)
 
   return (
     <form className="budget-setup">
@@ -118,7 +135,13 @@ export default function BudgetSetup() {
 
       </div>
 
-      <p className="remaining">extra to dispatch : —</p>
+      { Number.isNaN(toDispatch) ? (
+        <p className="remaining">extra to dispatch : —</p>
+       ) : toDispatch < 0 ? (
+        <p className="overspent">You'll be spending {Math.abs(toDispatch)}$ more than you actually have</p>
+       ) : (
+       <p className="remaining">extra to dispatch : {toDispatch}</p>
+       )}
 
       <button type="submit">Create budget</button>
     </form>
