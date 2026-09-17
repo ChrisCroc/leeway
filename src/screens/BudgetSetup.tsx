@@ -1,4 +1,8 @@
 import { useState } from "react"
+import FixedLine from "../components/FixedLine"
+import type { FixedDraft } from "../components/FixedLine"
+
+let nextFixedId = 1
 
 type ScalarFields = {
   available: string
@@ -16,9 +20,29 @@ export default function BudgetSetup() {
     necessity: "",
     leisure: "",
   })
+  const [fixedLines, setFixedLines] = useState<FixedDraft[]>([])
 
   function update(key: keyof ScalarFields, value: string) {
     setFields((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function addFixedLine() {
+    const id = `fixed-${nextFixedId++}`
+    setFixedLines((prev) => [...prev, { id, label: "", amount: "", dueDay: "" }])
+  }
+
+  function removeFixedLine(id: string) {
+    setFixedLines((prev) => prev.filter((line) => line.id !== id))
+  }
+
+  function changeFixedLine(
+    id: string,
+    field: keyof Omit<FixedDraft, "id">,
+    value: string
+  ) {
+    setFixedLines((prev) =>
+      prev.map((line) => (line.id === id ? { ...line, [field]: value } : line))
+    )
   }
 
   return (
@@ -34,6 +58,21 @@ export default function BudgetSetup() {
                onChange={(e) => update("available", e.target.value)}
               />
       </div>
+
+      <fieldset className="envelope">
+        <legend>Fixed charges</legend>
+
+        {fixedLines.map((line) => (
+          <FixedLine
+            key={line.id}
+            line={line}
+            onFieldChange={(field, value) => changeFixedLine(line.id, field, value)}
+            onRemove={() => removeFixedLine(line.id)}
+          />
+        ))}
+
+        <button type="button" onClick={addFixedLine}>Add a fixed charge</button>
+      </fieldset>
 
       <fieldset className="envelope">
         <legend>Savings</legend>
