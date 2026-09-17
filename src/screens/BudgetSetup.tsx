@@ -9,6 +9,11 @@ function toAmount(value: string): number {
   return Number(value.replace(",", "."))
 }
 
+const euros = new Intl.NumberFormat("fr-BE", {
+  style: "currency",
+  currency: "EUR",
+})
+
 type ScalarFields = {
   available: string
   savingsTarget: string
@@ -135,13 +140,17 @@ export default function BudgetSetup() {
 
       </div>
 
-      { Number.isNaN(toDispatch) ? (
+      {fields.available.trim() === "" ? (
+        <p className="remaining">Enter your available amount first</p>
+      ) : Number.isNaN(toDispatch) ? (
         <p className="remaining">extra to dispatch : —</p>
-       ) : toDispatch < 0 ? (
-        <p className="overspent">You'll be spending {Math.abs(toDispatch)}$ more than you actually have</p>
-       ) : (
-       <p className="remaining">extra to dispatch : {toDispatch}</p>
-       )}
+      ) : toDispatch < 0 ? (
+        <p className="overspent">
+          You'll be spending {euros.format(Math.abs(toDispatch))} more than you actually have
+        </p>
+      ) : (
+        <p className="remaining">extra to dispatch : {euros.format(toDispatch)}</p>
+      )}
 
       <button type="submit">Create budget</button>
     </form>
