@@ -1,6 +1,6 @@
 import { useState } from "react"
 import FixedLine from "../components/FixedLine"
-import type { FixedDraft } from "../components/FixedLine"
+import type { FixedDraft, ScalarFields } from "../draft/types"
 
 let nextFixedId = 1
 
@@ -13,14 +13,6 @@ const euros = new Intl.NumberFormat("fr-BE", {
   style: "currency",
   currency: "EUR",
 })
-
-type ScalarFields = {
-  available: string
-  savingsTarget: string
-  savingsFloor: string
-  necessity: string
-  leisure: string
-}
 
 export default function BudgetSetup() {
   const [fields, setFields] = useState<ScalarFields>({

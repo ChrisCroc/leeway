@@ -1,11 +1,5 @@
 import { useId } from "react"
-
-export type FixedDraft = {
-  id: string
-  label: string
-  amount: string
-  dueDay: string
-}
+import type { FixedDraft } from "../draft/types"
 
 type FixedLineProps = {
   line: FixedDraft
