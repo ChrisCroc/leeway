@@ -61,7 +61,7 @@ export default function BudgetSetup() {
 
   return (
     <form className="budget-setup">
-      <h1>Your budgety for this month</h1>
+      <h1>Your budget for this month</h1>
 
       <div className="field">
         <label htmlFor="available">Available amount</label>
