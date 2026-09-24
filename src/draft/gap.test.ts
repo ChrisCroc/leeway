@@ -44,3 +44,15 @@ test("is unreadable when a fixed charge is negative", () => {
 
   expect(gap).toEqual({ kind: "unreadable" } satisfies Gap)
 })
+
+test("is unreadable when the savings floor cannot be read", () => {
+  const gap = computeGap(makeFields({ savingsFloor: "abc" }), makeFixedLines())
+
+  expect(gap).toEqual({ kind: "unreadable" })
+})
+
+test("counts a field of spaces only as zero", () => {
+  const gap = computeGap(makeFields({ leisure: "  "}), makeFixedLines())
+
+  expect(gap).toEqual({ kind: "left", amount: 300 } satisfies Gap)
+})

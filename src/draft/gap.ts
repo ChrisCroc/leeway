@@ -19,6 +19,7 @@ export function computeGap(fields: ScalarFields, fixedLines: FixedDraft[]): Gap 
   const leisure = readAmount(fields.leisure)
 
   if (
+    readAmount(fields.savingsFloor) === null ||
     available === null ||
     savingsTarget === null ||
     necessity === null ||
