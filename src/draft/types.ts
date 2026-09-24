@@ -12,3 +12,10 @@ export type FixedDraft = {
   amount: string
   dueDay: string
 }
+
+export type Gap =
+  | { kind: "unreadable" }
+  | { kind: "balanced" }
+  | { kind: "left"; amount: number }
+  | { kind: "over"; amount: number }
+
