@@ -1,17 +1,38 @@
 import type { FixedDraft, Gap, ScalarFields } from "./types"
 
-export function computeGap(fields: ScalarFields, fixedLines: FixedDraft[]): Gap {
-  const fixedTotal = fixedLines.reduce(
-    (total, line) => total + Number(line.amount),
-    0
-  )
+function readAmount(text: string): number | null {
+  const amount = Number(text)
+  if (Number.isNaN(amount)) {
+    return null
+  }
+  return amount
+}
 
-  const remaining =
-    Number(fields.available) -
-    fixedTotal -
-    Number(fields.savingsTarget) -
-    Number(fields.necessity) -
-    Number(fields.leisure)
+export function computeGap(fields: ScalarFields, fixedLines: FixedDraft[]): Gap {
+  const available = readAmount(fields.available)
+  const savingsTarget = readAmount(fields.savingsTarget)
+  const necessity = readAmount(fields.necessity)
+  const leisure = readAmount(fields.leisure)
+
+  if (
+    available === null ||
+    savingsTarget === null ||
+    necessity === null ||
+    leisure === null
+  ) {
+    return { kind: "unreadable" }
+  }
+
+  let fixedTotal = 0
+  for (const line of fixedLines) {
+    const amount = readAmount(line.amount)
+    if (amount === null) {
+      return { kind: "unreadable" }
+    }
+    fixedTotal += amount
+  }
+
+  const remaining = available - fixedTotal - savingsTarget - necessity - leisure
 
   if (remaining > 0) {
     return { kind: "left", amount: remaining }

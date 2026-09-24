@@ -20,3 +20,21 @@ test("tells how much is overspent when more is dispatched than available", () =>
 
   expect(gap).toEqual({ kind: "over", amount: 50 } satisfies Gap)
 })
+
+test("counts an empty field as zero", () => {
+  const gap = computeGap(makeFields({ leisure: "" }), makeFixedLines())
+
+  expect(gap).toEqual({ kind: "left", amount: 300 } satisfies Gap)
+})
+
+test("ignores spaces around an amount", () => {
+  const gap = computeGap(makeFields({ leisure: " 300 " }), makeFixedLines())
+
+  expect(gap).toEqual({ kind: "balanced" } satisfies Gap)
+})
+
+test("is unreadable when an amount has decimals", () => {
+  const gap = computeGap(makeFields({ leisure: "12,5" }), makeFixedLines())
+
+  expect(gap).toEqual({ kind: "unreadable" } satisfies Gap)
+})
