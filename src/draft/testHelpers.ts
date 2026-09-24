@@ -11,9 +11,25 @@ export function makeFields(overrides: Partial<ScalarFields> = {}): ScalarFields 
   return { ...defaultFields, ...overrides }
 }
 
-export function makeFixedLines(rent = "750", invoices = "150"): FixedDraft[] {
+export function makeFixedLines(
+  rent: Partial<FixedDraft> = {},
+  invoices: Partial<FixedDraft> = {}
+): FixedDraft[] {
+  const defaultRent: FixedDraft = {
+    id: "fixed-1",
+    label: "rent",
+    amount: "750",
+    dueDay: "5",
+  }
+
+  const defaultInvoices: FixedDraft = {
+    id: "fixed-2",
+    label: "invoices",
+    amount: "150",
+    dueDay: "10",
+  }
   return [
-    { id: "fixed-1", label: "rent", amount: rent, dueDay: "5" },
-    { id: "fixed-2", label: "invoices", amount: invoices, dueDay: "10" }
+    { ...defaultRent, ...rent },
+    { ...defaultInvoices, ...invoices },
   ]
 }

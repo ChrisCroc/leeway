@@ -40,7 +40,7 @@ test("is unreadable when an amount has decimals", () => {
 })
 
 test("is unreadable when a fixed charge is negative", () => {
-  const gap = computeGap(makeFields(), makeFixedLines("-750"))
+  const gap = computeGap(makeFields(), makeFixedLines({ amount: "-750" }))
 
   expect(gap).toEqual({ kind: "unreadable" } satisfies Gap)
 })
@@ -52,7 +52,7 @@ test("is unreadable when the savings floor cannot be read", () => {
 })
 
 test("counts a field of spaces only as zero", () => {
-  const gap = computeGap(makeFields({ leisure: "  "}), makeFixedLines())
+  const gap = computeGap(makeFields({ leisure: "  " }), makeFixedLines())
 
   expect(gap).toEqual({ kind: "left", amount: 300 } satisfies Gap)
 })
