@@ -1,11 +1,15 @@
 import type { FixedDraft, Gap, ScalarFields } from "./types"
 
 function readAmount(text: string): number | null {
-  const amount = Number(text)
-  if (Number.isNaN(amount)) {
+  const trimmed = text.trim()
+  if (trimmed === "") {
+    return 0
+  }
+  ///^\d+$/.test(trimmed) REGEX expression: the model contains only a list of numbers
+  if (!/^\d+$/.test(trimmed)) {
     return null
   }
-  return amount
+  return Number(trimmed)
 }
 
 export function computeGap(fields: ScalarFields, fixedLines: FixedDraft[]): Gap {

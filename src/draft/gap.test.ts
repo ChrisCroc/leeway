@@ -38,3 +38,9 @@ test("is unreadable when an amount has decimals", () => {
 
   expect(gap).toEqual({ kind: "unreadable" } satisfies Gap)
 })
+
+test("is unreadable when a fixed charge is negative", () => {
+  const gap = computeGap(makeFields(), makeFixedLines("-750"))
+
+  expect(gap).toEqual({ kind: "unreadable" } satisfies Gap)
+})
