@@ -1,18 +1,39 @@
 import { useState } from "react"
 import FixedLine from "../components/FixedLine"
-import type { FixedDraft, ScalarFields } from "../draft/types"
+import { computeGap } from "../draft/gap"
+import type { FixedDraft, Gap, ScalarFields } from "../draft/types"
 
 let nextFixedId = 1
-
-function toAmount(value: string): number {
-  if (value.trim() === "") return 0
-  return Number(value.replace(",", "."))
-}
 
 const euros = new Intl.NumberFormat("fr-BE", {
   style: "currency",
   currency: "EUR",
 })
+
+type GapMessageProps = {
+  gap: Gap
+}
+
+function GapMessage({ gap }: GapMessageProps) {
+  switch (gap.kind) {
+    case "unreadable":
+      return <p className="remaining">extra to dispatch : —</p>
+    case "balanced":
+      return <p className="remaining">Everything is dispatched</p>
+    case "left":
+      return <p className="remaining">extra to dispatch : {euros.format(gap.amount)}</p>
+    case "over":
+      return (
+        <p className="overspent">
+          You'll be spending {euros.format(gap.amount)} more than you actually have
+        </p>
+      )
+    default: {
+      const unhandled: never = gap
+      return unhandled
+    }
+  }
+}
 
 export default function BudgetSetup() {
   const [fields, setFields] = useState<ScalarFields>({
@@ -47,17 +68,7 @@ export default function BudgetSetup() {
     )
   }
 
-  const fixedTotal = fixedLines.reduce(
-    (total, line) => total + toAmount(line.amount),
-    0
-  )
-
-  const toDispatch =
-    toAmount(fields.available) -
-    fixedTotal -
-    toAmount(fields.savingsTarget) -
-    toAmount(fields.necessity) -
-    toAmount(fields.leisure)
+  const gap = computeGap(fields, fixedLines)
 
   return (
     <form className="budget-setup">
@@ -66,10 +77,10 @@ export default function BudgetSetup() {
       <div className="field">
         <label htmlFor="available">Available amount</label>
         <input type="text"
-               id="available"
-               inputMode="numeric"
-               value={fields.available}
-               onChange={(e) => update("available", e.target.value)}
+                id="available"
+                inputMode="numeric"
+                value={fields.available}
+                onChange={(e) => update("available", e.target.value)}
               />
       </div>
 
@@ -94,20 +105,20 @@ export default function BudgetSetup() {
         <div className="field">
           <label htmlFor="savings-target">Targeted amount</label>
           <input type="text"
-                 id="savings-target"
-                 inputMode="numeric"
-                 value={fields.savingsTarget}
-                 onChange={(e) => update("savingsTarget", e.target.value)}
+                  id="savings-target"
+                  inputMode="numeric"
+                  value={fields.savingsTarget}
+                  onChange={(e) => update("savingsTarget", e.target.value)}
                 />
         </div>
 
         <div className="field">
           <label htmlFor="savings-floor">Minimum expected</label>
           <input type="text"
-                 id="savings-floor"
-                 inputMode="numeric"
-                 value={fields.savingsFloor}
-                 onChange={(e) => update("savingsFloor", e.target.value)}
+                  id="savings-floor"
+                  inputMode="numeric"
+                  value={fields.savingsFloor}
+                  onChange={(e) => update("savingsFloor", e.target.value)}
                 />
         </div>
       </fieldset>
@@ -115,33 +126,27 @@ export default function BudgetSetup() {
       <div className="field">
         <label htmlFor="necessity">Necessities</label>
         <input type="text"
-               id="necessity"
-               inputMode="numeric"
-               value={fields.necessity}
-               onChange={(e) => update("necessity", e.target.value)}
+                id="necessity"
+                inputMode="numeric"
+                value={fields.necessity}
+                onChange={(e) => update("necessity", e.target.value)}
               />
       </div>
 
       <div className="field">
         <label htmlFor="leisure">Leisure</label>
         <input type="text"
-               id="leisure"
-               inputMode="numeric"
-               value={fields.leisure}
-               onChange={(e) => update("leisure", e.target.value)}/>
+                id="leisure"
+                inputMode="numeric"
+                value={fields.leisure}
+                onChange={(e) => update("leisure", e.target.value)}/>
 
       </div>
 
       {fields.available.trim() === "" ? (
         <p className="remaining">Enter your available amount first</p>
-      ) : Number.isNaN(toDispatch) ? (
-        <p className="remaining">extra to dispatch : —</p>
-      ) : toDispatch < 0 ? (
-        <p className="overspent">
-          You'll be spending {euros.format(Math.abs(toDispatch))} more than you actually have
-        </p>
       ) : (
-        <p className="remaining">extra to dispatch : {euros.format(toDispatch)}</p>
+        <GapMessage gap={gap} />
       )}
 
       <button type="submit">Create budget</button>
