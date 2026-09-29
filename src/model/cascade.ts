@@ -76,7 +76,6 @@ export function simulatePurchase(
 
     withdrawals.push({ source: "overdraft", amount: fromOverdraft })
     breaches.push({ kind: "overdraft", amount: fromOverdraft })
-    missing -= fromOverdraft
   }
 
   if (breaches.length > 0) {
